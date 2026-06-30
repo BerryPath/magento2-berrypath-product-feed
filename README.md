@@ -7,6 +7,21 @@ platforms, product recommendation tools, comparison engines and Google Shopping
 feed pipelines. It exposes Magento product data in a stable XML format and can
 be extended with extra product attributes from the admin configuration.
 
+## Installation
+
+```bash
+composer require berrypath/magento2-berrypath-product-feed
+bin/magento module:enable BerryPath_ProductFeed
+bin/magento setup:upgrade
+bin/magento cache:flush
+```
+
+For local `app/code` development, place it at:
+
+```text
+app/code/BerryPath/ProductFeed
+```
+
 ## Configuration
 
 ```text
