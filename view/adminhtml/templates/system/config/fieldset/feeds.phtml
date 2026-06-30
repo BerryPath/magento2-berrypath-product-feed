@@ -1,0 +1,65 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @var \BerryPath\ProductFeed\Block\Adminhtml\Render\Feeds $block
+ */
+
+$feedData = $block->getFeedData();
+?>
+<?php if ($feedData !== []): ?>
+    <div class="bp-feed-panel">
+        <div class="bp-feed-panel__header">
+            <span class="bp-feed-panel__title"><?= $block->escapeHtml(__('Feeds')); ?></span>
+            <span class="bp-feed-panel__description">
+                <?= $block->escapeHtml(__('Each Magento store view has its own product feed URL.')); ?>
+            </span>
+        </div>
+
+        <div class="bp-feed-panel__items">
+            <?php foreach ($feedData as $data): ?>
+                <div class="bp-feed-card">
+                    <div class="bp-feed-card__summary">
+                        <div class="bp-feed-card__store">
+                            <strong><?= $block->escapeHtml((string)$data['name']); ?></strong>
+                            <span><?= $block->escapeHtml((string)$data['code']); ?> / ID <?= $block->escapeHtml((string)$data['store_id']); ?></span>
+                        </div>
+                        <div class="bp-feed-card__meta">
+                            <span class="bp-feed-type">
+                                <?= $block->escapeHtml(
+                                    ($data['feed_type'] ?? '') === 'google_shopping'
+                                        ? __('Google Shopping XML')
+                                        : __('XML')
+                                ); ?>
+                            </span>
+                            <?php if (!empty($data['market_code'])): ?>
+                                <span><?= $block->escapeHtml(__('Market: %1', (string)$data['market_code'])); ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="bp-feed-card__url">
+                        <span><?= $block->escapeHtml((string)$data['feed_url']); ?></span>
+                    </div>
+
+                    <div class="bp-feed-card__links">
+                        <a class="bp-feed-action bp-feed-action--primary" href="<?= $block->escapeUrl((string)$data['feed_url']); ?>" target="_blank" rel="noopener">
+                            <svg aria-hidden="true" viewBox="0 0 24 24">
+                                <path d="M14 3h7v7M10 14 21 3M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>
+                            </svg>
+                            <?= $block->escapeHtml(__('Open feed')); ?>
+                        </a>
+                        <a class="bp-feed-action" href="<?= $block->escapeUrl((string)$data['preview_url']); ?>" target="_blank" rel="noopener">
+                            <svg aria-hidden="true" viewBox="0 0 24 24">
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <?= $block->escapeHtml(__('Preview')); ?>
+                        </a>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php endif; ?>

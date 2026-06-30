@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="branding" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Branding</label>
+        <frontend_model>BerryPath\ProductFeed\Block\Adminhtml\Render\Header</frontend_model>
+    </group>
+    <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>General</label>
+        <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Enable product feed</label>
+            <comment>Generate a product feed for each Magento store view.</comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+        </field>
+        <field id="market_code" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Market code</label>
+            <comment>Optional market code for multi-storefront product feeds.</comment>
+        </field>
+        <field id="locale_code" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Locale code</label>
+            <comment>Leave empty to use the Magento store locale.</comment>
+            <source_model>BerryPath\ProductFeed\Model\Config\Source\LocaleCode</source_model>
+        </field>
+    </group>
+</include>

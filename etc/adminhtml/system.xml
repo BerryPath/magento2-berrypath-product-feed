@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="berrypath" translate="label" sortOrder="900" class="berrypath-tab">
+            <label>BerryPath</label>
+        </tab>
+        <section id="berrypath_productfeed" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Product Feed</label>
+            <tab>berrypath</tab>
+            <resource>BerryPath_ProductFeed::config</resource>
+            <include path="BerryPath_ProductFeed::system/general.xml"/>
+            <include path="BerryPath_ProductFeed::system/feed.xml"/>
+            <include path="BerryPath_ProductFeed::system/google.xml"/>
+        </section>
+    </system>
+</config>
