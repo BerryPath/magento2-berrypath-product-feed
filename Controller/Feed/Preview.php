@@ -173,12 +173,25 @@ class Preview extends Action implements HttpGetActionInterface
         /** @var Raw $result */
         $result = $this->resultFactory->create(ResultFactory::TYPE_RAW);
         $result->setHttpResponseCode($statusCode);
-        $result->setHeader('Content-Type', $contentType);
-        $result->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0', true);
-        $result->setHeader('Pragma', 'no-cache', true);
-        $result->setHeader('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT', true);
         $result->setContents($content);
 
+        foreach ($this->getPreviewHeaders($contentType) as $header => $value) {
+            $result->setHeader($header, $value, true);
+        }
+
         return $result;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function getPreviewHeaders(string $contentType): array
+    {
+        return [
+            'Content-Type' => $contentType,
+            'Cache-Control' => 'private, no-cache, no-store, max-age=0, must-revalidate',
+            'Expires' => '0',
+            'Pragma' => 'no-cache',
+        ];
     }
 }
