@@ -10,6 +10,7 @@ use BerryPath\ProductFeed\Model\Config\Source\OutputFormat;
 use BerryPath\ProductFeed\Model\Config\Source\ProductCondition;
 use BerryPath\ProductFeed\Model\Feed\CronExpression;
 use BerryPath\ProductFeed\Model\Feed\FileStorage;
+use BerryPath\ProductFeed\Model\Feed\ProfileConditions;
 use BerryPath\ProductFeed\Model\ProfileFactory;
 use BerryPath\ProductFeed\Model\ProfileRepository;
 use Magento\Backend\App\Action;
@@ -29,7 +30,8 @@ class Save extends Action implements HttpPostActionInterface
         private readonly ProfileFactory $profileFactory,
         private readonly ProfileRepository $profileRepository,
         private readonly FileStorage $fileStorage,
-        private readonly CronExpression $cronExpression
+        private readonly CronExpression $cronExpression,
+        private readonly ProfileConditions $profileConditions
     ) {
         parent::__construct($context);
     }
@@ -48,7 +50,7 @@ class Save extends Action implements HttpPostActionInterface
             $profile = $profileId > 0
                 ? $this->profileRepository->getById($profileId)
                 : $this->profileFactory->create();
-            $profile->addData($this->normalizeData($postData));
+            $profile->addData($this->normalizeData($postData, (string)$profile->getData('conditions_serialized')));
             $this->profileRepository->save($profile);
             if ($this->fileStorage->exists($profile)) {
                 $this->messageManager->addSuccessMessage(
@@ -79,7 +81,7 @@ class Save extends Action implements HttpPostActionInterface
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
-    private function normalizeData(array $data): array
+    private function normalizeData(array $data, string $currentConditions): array
     {
         $name = trim((string)($data['name'] ?? ''));
         if ($name === '') {
@@ -112,6 +114,7 @@ class Save extends Action implements HttpPostActionInterface
             'skip_child_products_of_inactive_parents' => !empty($data['skip_child_products_of_inactive_parents']) ? 1 : 0,
             'include_not_visible' => empty($data['visible_products_only']) ? 1 : 0,
             'extra_attributes' => (string)$extraAttributes,
+            'conditions_serialized' => $this->profileConditions->serializeFromPost($data, $currentConditions),
             'google_condition' => $this->normalizeCondition((string)($data['google_condition'] ?? 'new')),
             'google_include_shipping' => !empty($data['google_include_shipping']) ? 1 : 0,
             'google_shipping_country' => $this->normalizeCountry((string)($data['google_shipping_country'] ?? '')),

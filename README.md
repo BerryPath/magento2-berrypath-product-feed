@@ -1,6 +1,7 @@
 # Product Feed for Magento 2
 
-Magento 2 module for generating product feeds per store view.
+Magento 2 module for scheduled product feeds for shopping channels,
+marketplaces and product discovery.
 
 Create separate feeds for shopping channels, product discovery tools,
 marketplaces and guided-selling platforms. Each feed can target its own store
@@ -20,7 +21,7 @@ file link:
 
 ![BerryPath Product Feed general options](docs/screenshots/berrypath-product-feed-general.png)
 
-Choose product selection rules and optional Magento product attributes per feed:
+Choose product data options and optional Magento product attributes per feed:
 
 ![BerryPath Product Feed product data options](docs/screenshots/berrypath-product-feed-product-data.png)
 
@@ -61,8 +62,9 @@ preview URL in the admin is limited to the first 25 products. The live link in
 the admin points to the last generated file and exports all products.
 
 Use `Generate Feed` from the feed edit page, or the grid mass action, to write
-the feed file to `pub/media/berrypath/product-feed`. Saving feed options
-invalidates the generated file, so generate again after changing a feed.
+the feed file to `pub/media/berrypath/product-feed`. Saving feed options keeps
+the existing live file available. Generate again when the live file should
+reflect changed options.
 
 Each feed can also be generated automatically through Magento cron. Configure
 the refresh day and one or more refresh times on the feed edit page, under
@@ -88,6 +90,9 @@ brand in CDATA sections by default. This can be disabled per feed.
 Product selection options can be configured per feed. Defaults keep disabled
 products out, keep catalog/search-hidden products out, keep out-of-stock products
 in, and skip variant rows when their parent product is inactive.
+
+The Conditions tab uses Magento's standard rule builder for feed filtering.
+Leave it empty to include every product that matches the product data options.
 
 ## Feed Types
 

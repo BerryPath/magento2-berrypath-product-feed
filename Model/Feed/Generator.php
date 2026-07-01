@@ -49,6 +49,7 @@ class Generator
         private readonly ProductCollectionFactory $productCollectionFactory,
         private readonly CategoryCollectionFactory $categoryCollectionFactory,
         private readonly Config $feedConfig,
+        private readonly ProfileConditions $profileConditions,
         private readonly MediaConfig $mediaConfig,
         private readonly ReviewSummaryResource $reviewSummaryResource,
         private readonly Emulation $appEmulation,
@@ -84,6 +85,7 @@ class Generator
                 $profile
             );
             $this->reviewSummaryResource->appendSummaryFieldsToCollection($collection, $storeId, 'product');
+            $this->profileConditions->collectValidatedAttributes($profile, $collection);
             $total = (int)$collection->getSize();
             $products = [];
 
@@ -99,6 +101,10 @@ class Generator
                 }
 
                 if (isset($childIdsWithInactiveParents[(int)$product->getId()])) {
+                    continue;
+                }
+
+                if (!$this->profileConditions->validate($profile, $product)) {
                     continue;
                 }
 

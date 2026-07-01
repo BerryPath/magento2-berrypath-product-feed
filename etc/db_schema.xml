@@ -18,6 +18,7 @@
         <column xsi:type="smallint" name="skip_child_products_of_inactive_parents" nullable="false" default="1" comment="Skip Child Products Of Inactive Parents"/>
         <column xsi:type="smallint" name="include_not_visible" nullable="false" default="0" comment="Legacy Visibility Flag"/>
         <column xsi:type="text" name="extra_attributes" nullable="true" comment="Extra Product Attributes"/>
+        <column xsi:type="text" name="conditions_serialized" nullable="true" comment="Product Feed Conditions"/>
         <column xsi:type="varchar" name="google_condition" nullable="false" length="32" default="new" comment="Google Product Condition"/>
         <column xsi:type="smallint" name="google_include_shipping" nullable="false" default="0" comment="Include Google Shipping"/>
         <column xsi:type="varchar" name="google_shipping_country" nullable="true" length="2" comment="Google Shipping Country"/>

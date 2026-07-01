@@ -53,6 +53,7 @@ class InitializeDefaultProfiles implements DataPatchInterface
                     'skip_child_products_of_inactive_parents' => 1,
                     'include_not_visible' => 0,
                     'extra_attributes' => '',
+                    'conditions_serialized' => '',
                     'google_condition' => 'new',
                     'google_include_shipping' => 0,
                     'google_shipping_country' => null,

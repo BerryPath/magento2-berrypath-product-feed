@@ -79,6 +79,7 @@ class Edit extends Action implements HttpGetActionInterface
                 ->skipChildProductsOfInactiveParents($storeId),
             'include_not_visible' => (int)!$this->feedConfig->visibleProductsOnly($storeId),
             'extra_attributes' => implode(',', $this->feedConfig->getExtraAttributeCodes($storeId)),
+            'conditions_serialized' => '',
             'google_condition' => 'new',
             'google_include_shipping' => 0,
             'google_shipping_service' => 'Standard',
