@@ -2,10 +2,12 @@
 
 Magento 2 module for generating product feeds per store view.
 
-The feed is intended for external product-data consumers such as guided-selling
-platforms, product recommendation tools, comparison engines and Google Shopping
-feed pipelines. It exposes Magento product data in a stable XML format and can
-be extended with extra product attributes from the admin configuration.
+Create separate feeds for shopping channels, product discovery tools,
+marketplaces and guided-selling platforms. Each feed can target its own store
+view, channel type and output format, including XML, CSV and JSON. Feed files
+are generated to Magento media storage, can be refreshed manually or through
+Magento cron, and can be enriched with selected product attributes and
+channel-specific options such as Google Shopping shipping data.
 
 ## Screenshots
 
