@@ -72,6 +72,10 @@ class CatalogRowBuilder
     public function googleRows(array $feed, array $options): array
     {
         $currency = $this->currency($feed);
+        if (!empty($options['seller_name'])) {
+            $options['seller_name_value'] = $this->sellerName($this->config($feed));
+        }
+
         $rows = [];
 
         foreach ($this->products($feed) as $product) {
@@ -167,7 +171,7 @@ class CatalogRowBuilder
             'description' => $description,
             'link' => $this->value->asString($product['url'] ?? ''),
             'image_link' => $this->value->asString($product['image'] ?? ''),
-            'availability' => !empty($product['is_salable']) ? 'in_stock' : 'out_of_stock',
+            'availability' => $this->availabilityValue(!empty($product['is_salable']), $options),
             'condition' => $this->value->asString($options['condition'] ?? 'new') ?: 'new',
             'price' => $this->value->priceWithCurrency($price, $currency),
         ];
@@ -182,6 +186,11 @@ class CatalogRowBuilder
         }
 
         $this->addGoogleOptionalProductFields($row, $product);
+
+        $sellerName = $this->value->asString($options['seller_name_value'] ?? '');
+        if ($sellerName !== '') {
+            $row['seller_name'] = $sellerName;
+        }
 
         return $this->value->filterEmptyRow($row);
     }
@@ -245,7 +254,7 @@ class CatalogRowBuilder
             'description' => $description,
             'producturl' => $this->value->asString($product['url'] ?? ''),
             'bigimage' => $this->value->asString($product['image'] ?? ''),
-            'price' => $this->value->priceWithCurrency($sellPrice, $currency),
+            'price' => $this->plainAmount($sellPrice),
             'instock' => !empty($product['is_salable']) ? 'true' : 'false',
             'categoryid' => $this->value->productType($product),
             'brand' => $this->brand($product, ''),
@@ -253,7 +262,7 @@ class CatalogRowBuilder
         ];
 
         if ($this->isSalePrice($price, $finalPrice)) {
-            $row['retailprice'] = $this->value->priceWithCurrency($price, $currency);
+            $row['retailprice'] = $this->plainAmount($price);
         }
 
         $gtin = $this->firstFieldValue($product, ['gtin', 'ean', 'upc', 'isbn', 'barcode']);
@@ -430,6 +439,27 @@ class CatalogRowBuilder
         $shortDescription = $this->value->asString($product['short_description'] ?? '');
 
         return $shortDescription !== '' ? $shortDescription : $fallback;
+    }
+
+    /**
+     * @param array<string, mixed> $options
+     */
+    private function availabilityValue(bool $inStock, array $options): string
+    {
+        $space = ($options['availability_style'] ?? '') === 'space';
+
+        if ($inStock) {
+            return $space ? 'in stock' : 'in_stock';
+        }
+
+        return $space ? 'out of stock' : 'out_of_stock';
+    }
+
+    private function plainAmount(string $amount): string
+    {
+        $value = $this->value->amountValue($amount);
+
+        return $value > 0.0 ? number_format($value, 2, '.', '') : '';
     }
 
     private function isSalePrice(string $price, string $finalPrice): bool

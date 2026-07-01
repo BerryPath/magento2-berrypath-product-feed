@@ -80,7 +80,7 @@ class Formatter
      */
     public function toChannelXml(array $feed, string $feedType, array $options = []): string
     {
-        return $this->getChannelFormatter($feedType)->toXml($feed, $options);
+        return $this->getChannelFormatter($feedType)->toXml($feed, $this->channelOptions($feedType, $options));
     }
 
     /**
@@ -89,7 +89,7 @@ class Formatter
      */
     public function toChannelJson(array $feed, string $feedType, array $options = []): string
     {
-        return $this->getChannelFormatter($feedType)->toJson($feed, $options);
+        return $this->getChannelFormatter($feedType)->toJson($feed, $this->channelOptions($feedType, $options));
     }
 
     /**
@@ -98,7 +98,24 @@ class Formatter
      */
     public function toChannelCsv(array $feed, string $feedType, array $options = []): string
     {
-        return $this->getChannelFormatter($feedType)->toCsv($feed, $options);
+        return $this->getChannelFormatter($feedType)->toCsv($feed, $this->channelOptions($feedType, $options));
+    }
+
+    /**
+     * Apply channel-specific output tweaks on top of the shared Google-compatible formatter.
+     *
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
+     */
+    private function channelOptions(string $feedType, array $options): array
+    {
+        return match ($feedType) {
+            // Meta prefers the space-form availability values (in stock / out of stock).
+            FeedType::META_CATALOG => array_merge($options, ['availability_style' => 'space']),
+            // Microsoft Merchant Center (Bing) recommends a seller_name attribute.
+            FeedType::MICROSOFT_SHOPPING => array_merge($options, ['seller_name' => true]),
+            default => $options,
+        };
     }
 
     private function getChannelFormatter(string $feedType): ChannelFormatterInterface

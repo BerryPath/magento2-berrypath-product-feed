@@ -97,11 +97,24 @@ Leave it empty to include every product that matches the product data options.
 ## Feed Types
 
 The default feed type is Product Feed and the default output format is XML.
+Every feed type can be exported as XML, CSV or JSON.
 
-Google Shopping Feed can be enabled per feed. That output uses RSS 2.0
-with the Google `g:` namespace and emits Google product attributes such as
-`g:id`, `g:title`, `g:price`, `g:availability` and optional `g:shipping` when
-the output format is XML.
+| Feed type | XML format | Notes |
+| --- | --- | --- |
+| Product Feed | `<product_feed>` | Generic full product dump. Default. |
+| Google Shopping | RSS 2.0 + `g:` namespace | `g:id`, `g:title`, `g:price`, `g:availability`, optional `g:shipping`. |
+| Meta (Facebook) | RSS 2.0 + `g:` namespace | Google-compatible feed with space-form `availability` (`in stock`). |
+| Pinterest | RSS 2.0 + `g:` namespace | Pinterest catalogs use the Google-compatible feed. |
+| Microsoft / Bing | RSS 2.0 + `g:` namespace | Microsoft Merchant Center (Bing Shopping); adds `g:seller_name`. |
+| Snapchat | RSS 2.0 + `g:` namespace | Snap catalogs accept the Google-compatible feed. |
+| TikTok | `<catalog_feed>` | Rows keyed on `sku_id`. |
+| Criteo | `<products><product>` | Criteo field names: `producturl`, `bigimage`, bare `price`/`retailprice`, `instock`, `categoryid`. |
+| OpenAI Product | `<openai_product_feed>` | Emits `item_id`, `is_eligible_search`, `seller_name`, `target_countries`. |
+
+Google Shopping, Meta, Pinterest, Microsoft / Bing and Snapchat share the same
+RSS 2.0 output with the Google `g:` namespace, since those channels all ingest
+the Google-compatible product feed. Shipping, condition and sale-price options
+apply to every Google-compatible channel.
 
 ## Current Feed Fields
 
@@ -113,9 +126,11 @@ prices are available.
 
 ## Possible Channel Usage
 
-The Google Shopping feed mode covers the core XML/RSS format and namespace.
-Some merchants may still need channel-specific enrichment such as Google product
-category, GTIN/MPN/brand mapping, promotion feeds or custom title and description
+The Google-compatible channels (Google, Meta, Pinterest, Microsoft / Bing,
+Snapchat) cover the core RSS format, namespace and shared attributes. TikTok,
+Criteo and OpenAI use their own field mapping. Some merchants may still need
+extra channel-specific enrichment such as Google product category mapping,
+GTIN/MPN/brand mapping, promotion feeds or custom title and description
 optimization.
 
 ## BerryPath
