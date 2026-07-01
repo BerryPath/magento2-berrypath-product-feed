@@ -13,20 +13,20 @@ channel-specific options such as Google Shopping shipping data.
 
 Manage multiple feeds per channel, store view and output format:
 
-![BerryPath Product Feed overview](docs/screenshots/feeds-overview.png)
+![BerryPath Product Feed overview](docs/screenshots/berrypath-product-feeds-overview.png)
 
 Configure each feed with its own type, format, CDATA setting and generated live
 file link:
 
-![BerryPath Product Feed general options](docs/screenshots/feed-general.png)
+![BerryPath Product Feed general options](docs/screenshots/berrypath-product-feed-general.png)
 
 Choose product selection rules and optional Magento product attributes per feed:
 
-![BerryPath Product Feed product data options](docs/screenshots/feed-product-data.png)
+![BerryPath Product Feed product data options](docs/screenshots/berrypath-product-feed-product-data.png)
 
 Schedule automatic feed generation through Magento cron:
 
-![BerryPath Product Feed schedule options](docs/screenshots/feed-schedule.png)
+![BerryPath Product Feed schedule options](docs/screenshots/berrypath-product-feed-schedule.png)
 
 ## Installation
 
