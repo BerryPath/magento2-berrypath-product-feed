@@ -31,7 +31,7 @@ class NewConditionHtml extends Action implements HttpGetActionInterface, HttpPos
     {
         $result = $this->rawFactory->create();
         $type = $this->getConditionType();
-        if ($type === '') {
+        if ($type === '' || !$this->isAllowedConditionType($type)) {
             return $result->setContents('');
         }
 
@@ -60,6 +60,22 @@ class NewConditionHtml extends Action implements HttpGetActionInterface, HttpPos
         }
 
         return $result->setContents('');
+    }
+
+    /**
+     * Restrict instantiation to Magento rule condition classes, preventing arbitrary class creation.
+     */
+    private function isAllowedConditionType(string $type): bool
+    {
+        $type = ltrim($type, '\\');
+
+        foreach (['Magento\\CatalogRule\\Model\\Rule\\Condition\\', 'Magento\\Rule\\Model\\Condition\\'] as $prefix) {
+            if (str_starts_with($type, $prefix) && is_subclass_of($type, AbstractCondition::class)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function getConditionType(): string

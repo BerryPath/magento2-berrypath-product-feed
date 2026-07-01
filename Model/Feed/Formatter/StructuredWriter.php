@@ -215,10 +215,24 @@ class StructuredWriter
         if (is_array($value)) {
             $json = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-            return $json !== false ? $json : '';
+            return $this->neutralizeCsvFormula($json !== false ? $json : '');
         }
 
-        return is_scalar($value) || $value instanceof \Stringable ? (string)$value : '';
+        return $this->neutralizeCsvFormula(
+            is_scalar($value) || $value instanceof \Stringable ? (string)$value : ''
+        );
+    }
+
+    /**
+     * Prevent CSV formula/spreadsheet injection when the feed is opened in Excel/Sheets.
+     */
+    private function neutralizeCsvFormula(string $value): string
+    {
+        if ($value === '') {
+            return $value;
+        }
+
+        return str_contains("=+-@\t\r", $value[0]) ? "'" . $value : $value;
     }
 
     private function sanitizeElementName(string $name): string

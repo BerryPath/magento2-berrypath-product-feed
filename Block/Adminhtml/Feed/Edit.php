@@ -48,6 +48,15 @@ class Edit extends Container
     protected function _prepareLayout()
     {
         $profile = $this->getProfile();
+
+        if ($profile->getId()) {
+            $this->buttonList->update(
+                'delete',
+                'onclick',
+                $this->getPostOnClick($this->getDeleteUrl(), (string)__('Are you sure you want to delete this feed?'))
+            );
+        }
+
         if ($profile->getId() && $this->fileStorage->exists($profile)) {
             $this->buttonList->add(
                 'open_feed',
@@ -67,9 +76,9 @@ class Edit extends Container
                 [
                     'class' => 'action-secondary',
                     'label' => __('Generate Feed'),
-                    'onclick' => "setLocation('" . $this->escapeJs(
+                    'onclick' => $this->getPostOnClick(
                         $this->getUrl('berrypath/feed/generate', ['id' => (int)$profile->getId()])
-                    ) . "');",
+                    ),
                 ],
                 0
             );
@@ -116,5 +125,22 @@ class Edit extends Container
     private function getProfile(): Profile
     {
         return $this->registry->registry('current_berrypath_productfeed_profile');
+    }
+
+    /**
+     * Build an onclick handler that submits a CSRF-protected POST request instead of a GET navigation.
+     */
+    private function getPostOnClick(string $url, string $confirmMessage = ''): string
+    {
+        $js = "var f=document.createElement('form');f.method='POST';f.action='"
+            . $this->escapeJs($url)
+            . "';var k=document.createElement('input');k.type='hidden';k.name='form_key';"
+            . "k.value=window.FORM_KEY;f.appendChild(k);document.body.appendChild(f);f.submit();";
+
+        if ($confirmMessage !== '') {
+            return "if(window.confirm('" . $this->escapeJs($confirmMessage) . "')){" . $js . "}";
+        }
+
+        return $js;
     }
 }

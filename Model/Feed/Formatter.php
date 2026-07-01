@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace BerryPath\ProductFeed\Model\Feed;
 
 use BerryPath\ProductFeed\Model\Config\Source\FeedType;
-use BerryPath\ProductFeed\Model\Feed\Formatter\CatalogFormatter;
 use BerryPath\ProductFeed\Model\Feed\Formatter\ChannelFormatterInterface;
+use BerryPath\ProductFeed\Model\Feed\Formatter\CriteoFormatter;
 use BerryPath\ProductFeed\Model\Feed\Formatter\GenericFormatter;
 use BerryPath\ProductFeed\Model\Feed\Formatter\GoogleShoppingFormatter;
 use BerryPath\ProductFeed\Model\Feed\Formatter\OpenAiProductFormatter;
@@ -17,9 +17,9 @@ class Formatter
     public function __construct(
         private readonly GenericFormatter $genericFormatter,
         private readonly GoogleShoppingFormatter $googleShoppingFormatter,
-        private readonly CatalogFormatter $catalogFormatter,
         private readonly TikTokCatalogFormatter $tikTokCatalogFormatter,
-        private readonly OpenAiProductFormatter $openAiProductFormatter
+        private readonly OpenAiProductFormatter $openAiProductFormatter,
+        private readonly CriteoFormatter $criteoFormatter
     ) {
     }
 
@@ -104,12 +104,16 @@ class Formatter
     private function getChannelFormatter(string $feedType): ChannelFormatterInterface
     {
         return match ($feedType) {
-            FeedType::GOOGLE_SHOPPING => $this->googleShoppingFormatter,
-            FeedType::TIKTOK_CATALOG => $this->tikTokCatalogFormatter,
-            FeedType::OPENAI_PRODUCT => $this->openAiProductFormatter,
+            // Meta, Pinterest, Microsoft and Snapchat all ingest the Google-compatible
+            // RSS 2.0 feed (base.google.com/ns/1.0 namespace), so they share that formatter.
+            FeedType::GOOGLE_SHOPPING,
             FeedType::META_CATALOG,
             FeedType::PINTEREST_CATALOG,
-            FeedType::MICROSOFT_SHOPPING => $this->catalogFormatter,
+            FeedType::MICROSOFT_SHOPPING,
+            FeedType::SNAPCHAT_CATALOG => $this->googleShoppingFormatter,
+            FeedType::TIKTOK_CATALOG => $this->tikTokCatalogFormatter,
+            FeedType::OPENAI_PRODUCT => $this->openAiProductFormatter,
+            FeedType::CRITEO => $this->criteoFormatter,
             default => $this->genericFormatter,
         };
     }

@@ -17,6 +17,7 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Escaper;
+use Psr\Log\LoggerInterface;
 
 class Preview extends Action implements HttpGetActionInterface
 {
@@ -29,7 +30,8 @@ class Preview extends Action implements HttpGetActionInterface
         private readonly Formatter $formatter,
         private readonly FileStorage $fileStorage,
         private readonly Escaper $escaper,
-        private readonly ProfileRepository $profileRepository
+        private readonly ProfileRepository $profileRepository,
+        private readonly LoggerInterface $logger
     ) {
         parent::__construct($context);
     }
@@ -53,7 +55,9 @@ class Preview extends Action implements HttpGetActionInterface
                 $profile
             );
         } catch (\Throwable $exception) {
-            return $this->rawResponse($exception->getMessage(), 'text/plain', 500);
+            $this->logger->error('BerryPath ProductFeed preview failed.', ['exception' => $exception]);
+
+            return $this->rawResponse((string)__('Unable to render the feed preview.'), 'text/plain', 500);
         }
 
         return $this->rawResponse($this->renderPreview($feed, $isLimited, $profile), 'text/html');

@@ -8,11 +8,10 @@ use BerryPath\ProductFeed\Model\Feed\FileStorage;
 use BerryPath\ProductFeed\Model\ProfileRepository;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\Result\Redirect;
 
-class Delete extends Action implements HttpGetActionInterface, HttpPostActionInterface
+class Delete extends Action implements HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = 'BerryPath_ProductFeed::feeds';
 

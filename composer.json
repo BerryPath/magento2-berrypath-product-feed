@@ -2,7 +2,7 @@
     "name": "berrypath/magento2-berrypath-product-feed",
     "description": "Scheduled product feeds for Magento 2 shopping channels, marketplaces and product discovery.",
     "type": "magento2-module",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "license": "MIT",
     "support": {
         "source": "https://github.com/BerryPath/magento2-berrypath-product-feed"

@@ -120,6 +120,23 @@ class CatalogRowBuilder
      * @param array<string, mixed> $options
      * @return array<int, array<string, mixed>>
      */
+    public function criteoRows(array $feed, array $options): array
+    {
+        $currency = $this->currency($feed);
+        $rows = [];
+
+        foreach ($this->products($feed) as $product) {
+            $rows[] = $this->criteoRow($product, $currency, $options);
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param array<string, mixed> $feed
+     * @param array<string, mixed> $options
+     * @return array<int, array<string, mixed>>
+     */
     public function openAiRows(array $feed, array $options): array
     {
         $config = $this->config($feed);
@@ -202,6 +219,46 @@ class CatalogRowBuilder
 
         if (!isset($row['google_product_category']) && isset($row['product_type'])) {
             $row['google_product_category'] = $row['product_type'];
+        }
+
+        return $this->value->filterEmptyRow($row);
+    }
+
+    /**
+     * Criteo catalog feed uses its own field names (producturl, bigimage, retailprice, instock).
+     *
+     * @param array<string, mixed> $product
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
+     */
+    public function criteoRow(array $product, string $currency, array $options): array
+    {
+        $title = $this->title($product);
+        $description = $this->description($product, $title);
+        $price = $this->value->asString($product['price'] ?? '');
+        $finalPrice = $this->value->asString($product['final_price'] ?? $price);
+        $sellPrice = $finalPrice !== '' ? $finalPrice : $price;
+
+        $row = [
+            'id' => $this->productId($product),
+            'title' => $title,
+            'description' => $description,
+            'producturl' => $this->value->asString($product['url'] ?? ''),
+            'bigimage' => $this->value->asString($product['image'] ?? ''),
+            'price' => $this->value->priceWithCurrency($sellPrice, $currency),
+            'instock' => !empty($product['is_salable']) ? 'true' : 'false',
+            'categoryid' => $this->value->productType($product),
+            'brand' => $this->brand($product, ''),
+            'condition' => $this->value->asString($options['condition'] ?? 'new') ?: 'new',
+        ];
+
+        if ($this->isSalePrice($price, $finalPrice)) {
+            $row['retailprice'] = $this->value->priceWithCurrency($price, $currency);
+        }
+
+        $gtin = $this->firstFieldValue($product, ['gtin', 'ean', 'upc', 'isbn', 'barcode']);
+        if ($gtin !== '') {
+            $row['gtin'] = $gtin;
         }
 
         return $this->value->filterEmptyRow($row);

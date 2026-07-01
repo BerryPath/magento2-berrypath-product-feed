@@ -16,6 +16,8 @@ class FeedType implements OptionSourceInterface
     public const TIKTOK_CATALOG = 'tiktok_catalog';
     public const PINTEREST_CATALOG = 'pinterest_catalog';
     public const MICROSOFT_SHOPPING = 'microsoft_shopping';
+    public const SNAPCHAT_CATALOG = 'snapchat_catalog';
+    public const CRITEO = 'criteo';
     public const OPENAI_PRODUCT = 'openai_product';
 
     /**
@@ -29,7 +31,9 @@ class FeedType implements OptionSourceInterface
             ['value' => self::META_CATALOG, 'label' => __('Meta Catalog Feed')],
             ['value' => self::TIKTOK_CATALOG, 'label' => __('TikTok Catalog Feed')],
             ['value' => self::PINTEREST_CATALOG, 'label' => __('Pinterest Catalog Feed')],
-            ['value' => self::MICROSOFT_SHOPPING, 'label' => __('Microsoft Shopping Feed')],
+            ['value' => self::MICROSOFT_SHOPPING, 'label' => __('Microsoft / Bing Shopping Feed')],
+            ['value' => self::SNAPCHAT_CATALOG, 'label' => __('Snapchat Catalog Feed')],
+            ['value' => self::CRITEO, 'label' => __('Criteo Feed')],
             ['value' => self::OPENAI_PRODUCT, 'label' => __('OpenAI Product Feed')],
         ];
     }
@@ -46,6 +50,8 @@ class FeedType implements OptionSourceInterface
             self::TIKTOK_CATALOG,
             self::PINTEREST_CATALOG,
             self::MICROSOFT_SHOPPING,
+            self::SNAPCHAT_CATALOG,
+            self::CRITEO,
             self::OPENAI_PRODUCT,
         ];
     }
