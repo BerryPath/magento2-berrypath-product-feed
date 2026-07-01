@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="berrypath_productfeed_profile" resource="default" engine="innodb" comment="BerryPath Product Feeds">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true" comment="Feed ID"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Name"/>
+        <column xsi:type="smallint" name="is_active" nullable="false" default="1" comment="Is Active"/>
+        <column xsi:type="varchar" name="feed_type" nullable="false" length="64" default="product_feed" comment="Feed Type"/>
+        <column xsi:type="varchar" name="output_format" nullable="false" length="16" default="xml" comment="Output Format"/>
+        <column xsi:type="smallint" name="use_cdata" nullable="false" default="1" comment="Use CDATA"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="market_code" nullable="true" length="40" comment="Market Code"/>
+        <column xsi:type="varchar" name="locale_code" nullable="true" length="16" comment="Locale Code"/>
+        <column xsi:type="varchar" name="product_identifier" nullable="false" length="255" default="entity_id" comment="Product Identifier Source"/>
+        <column xsi:type="smallint" name="active_products_only" nullable="false" default="1" comment="Active Products Only"/>
+        <column xsi:type="smallint" name="visible_products_only" nullable="false" default="1" comment="Catalog Visible Products Only"/>
+        <column xsi:type="smallint" name="salable_products_only" nullable="false" default="0" comment="Products Available For Purchase Only"/>
+        <column xsi:type="smallint" name="skip_child_products_of_inactive_parents" nullable="false" default="1" comment="Skip Child Products Of Inactive Parents"/>
+        <column xsi:type="smallint" name="include_not_visible" nullable="false" default="0" comment="Legacy Visibility Flag"/>
+        <column xsi:type="text" name="extra_attributes" nullable="true" comment="Extra Product Attributes"/>
+        <column xsi:type="varchar" name="google_condition" nullable="false" length="32" default="new" comment="Google Product Condition"/>
+        <column xsi:type="smallint" name="google_include_shipping" nullable="false" default="0" comment="Include Google Shipping"/>
+        <column xsi:type="varchar" name="google_shipping_country" nullable="true" length="2" comment="Google Shipping Country"/>
+        <column xsi:type="varchar" name="google_shipping_service" nullable="true" length="255" comment="Google Shipping Service"/>
+        <column xsi:type="decimal" name="google_shipping_price" scale="4" precision="12" nullable="true" comment="Google Shipping Price"/>
+        <column xsi:type="smallint" name="schedule_enabled" nullable="false" default="1" comment="Schedule Enabled"/>
+        <column xsi:type="text" name="schedule_cron_expression" nullable="true" comment="Schedule Cron Expression"/>
+        <column xsi:type="timestamp" name="generated_at" nullable="true" comment="Generated At"/>
+        <column xsi:type="timestamp" name="last_executed_at" nullable="true" comment="Last Executed At"/>
+        <column xsi:type="int" name="generated_products_count" unsigned="true" nullable="true" comment="Generated Products Count"/>
+        <column xsi:type="text" name="last_generation_error" nullable="true" comment="Last Generation Error"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="BERRYPATH_PRODUCTFEED_PROFILE_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+        <index referenceId="BERRYPATH_PRODUCTFEED_PROFILE_FEED_TYPE" indexType="btree">
+            <column name="feed_type"/>
+        </index>
+        <index referenceId="BERRYPATH_PRODUCTFEED_PROFILE_OUTPUT_FORMAT" indexType="btree">
+            <column name="output_format"/>
+        </index>
+    </table>
+</schema>

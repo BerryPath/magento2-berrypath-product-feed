@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="BerryPath_ProductFeed::berrypath"
+             title="BerryPath"
+             module="BerryPath_ProductFeed"
+             sortOrder="35"
+             parent="Magento_Catalog::catalog"
+             resource="BerryPath_ProductFeed::berrypath"/>
+        <add id="BerryPath_ProductFeed::feeds"
+             title="Product Feeds"
+             module="BerryPath_ProductFeed"
+             sortOrder="10"
+             parent="BerryPath_ProductFeed::berrypath"
+             action="berrypath/feed/index"
+             resource="BerryPath_ProductFeed::feeds"/>
+    </menu>
+</config>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="BerryPath\ProductFeed\Block\Adminhtml\Render\Header"
+                   name="berrypath.productfeed.feed.index.header"
+                   before="-"/>
+            <container name="berrypath.productfeed.feed.index.container"
+                       htmlTag="div"
+                       htmlClass="bp-productfeed-grid">
+                <uiComponent name="berrypath_productfeed_profile_listing"/>
+            </container>
+        </referenceContainer>
+    </body>
+</page>

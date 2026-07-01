@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @var \Magento\Backend\Block\Template $block
+ */
+?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "BerryPath_ProductFeed/js/feed-type-tabs": {
+            "feedTypeSelector": "#feed_type",
+            "tabsId": "berrypath_productfeed_profile_tabs",
+            "generalTabId": "berrypath_productfeed_profile_tabs_general",
+            "typeTabs": {
+                "berrypath_productfeed_profile_tabs_google_shopping": ["google_shopping"]
+            }
+        },
+        "BerryPath_ProductFeed/js/schedule-fields": {
+            "modeSelector": "#schedule_enabled",
+            "fieldSelectors": [
+                "#schedule_day",
+                "#schedule_time"
+            ]
+        },
+        "BerryPath_ProductFeed/js/copy-link": {
+            "buttonSelector": "[data-bp-copy-feed-url]"
+        }
+    }
+}
+</script>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BerryPath\ProductFeed\Model\Feed;
 
+use BerryPath\ProductFeed\Model\Profile;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
@@ -59,22 +60,28 @@ class Generator
     /**
      * @return array{config: array<string, mixed>, products: array<int, array<string, mixed>>}
      */
-    public function generate(int $storeId, ?string $productId = null, ?int $productLimit = null): array
-    {
+    public function generate(
+        int $storeId,
+        ?string $productId = null,
+        ?int $productLimit = null,
+        ?Profile $profile = null
+    ): array {
         $timeStart = microtime(true);
         $this->appEmulation->startEnvironmentEmulation($storeId, Area::AREA_FRONTEND, true);
 
         try {
             $store = $this->storeManager->getStore($storeId);
             $currency = (string)$store->getCurrentCurrencyCode();
-            $identifierSource = $this->feedConfig->getProductIdentifierSource($storeId);
-            $extraAttributes = $this->feedConfig->getExtraAttributeCodes($storeId);
+            $identifierSource = $this->feedConfig->getProductIdentifierSource($storeId, $profile);
+            $extraAttributes = $this->feedConfig->getExtraAttributeCodes($storeId, $profile);
+            $salableProductsOnly = $this->feedConfig->salableProductsOnly($storeId, $profile);
             $collection = $this->createProductCollection(
                 $storeId,
                 $identifierSource,
                 $extraAttributes,
                 $productId,
-                $productLimit
+                $productLimit,
+                $profile
             );
             $this->reviewSummaryResource->appendSummaryFieldsToCollection($collection, $storeId, 'product');
             $total = (int)$collection->getSize();
@@ -82,20 +89,34 @@ class Generator
 
             $collection->load();
             $categoryNames = $this->getCategoryNames($collection, $storeId);
+            $childIdsWithInactiveParents = $this->feedConfig->skipChildProductsOfInactiveParents($storeId, $profile)
+                ? $this->getChildIdsWithInactiveParents($collection, $storeId)
+                : [];
 
             foreach ($collection as $product) {
                 if (!$product instanceof Product) {
                     continue;
                 }
 
-                $row = $this->getProductRow($product, $identifierSource, $extraAttributes, $categoryNames, $currency);
+                if (isset($childIdsWithInactiveParents[(int)$product->getId()])) {
+                    continue;
+                }
+
+                $row = $this->getProductRow(
+                    $product,
+                    $identifierSource,
+                    $extraAttributes,
+                    $categoryNames,
+                    $currency,
+                    $salableProductsOnly
+                );
                 if ($row !== []) {
                     $products[] = $row;
                 }
             }
 
             return [
-                'config' => $this->getSummary($storeId, $timeStart, $total, count($products), $currency),
+                'config' => $this->getSummary($storeId, $timeStart, $total, count($products), $currency, $profile),
                 'products' => $products,
             ];
         } finally {
@@ -111,7 +132,8 @@ class Generator
         string $identifierSource,
         array $extraAttributes,
         ?string $productId,
-        ?int $productLimit
+        ?int $productLimit,
+        ?Profile $profile
     ): ProductCollection {
         $attributeCodes = array_values(array_unique(array_filter(array_merge(
             self::BASE_ATTRIBUTES,
@@ -123,12 +145,15 @@ class Generator
         $collection->setStoreId($storeId);
         $collection->addStoreFilter($storeId);
         $collection->addAttributeToSelect($attributeCodes);
-        $collection->addAttributeToFilter('status', Status::STATUS_ENABLED);
         $collection->setOrder('entity_id', 'ASC');
         $collection->addUrlRewrite();
         $this->joinPriceIndex($collection, $storeId);
 
-        if (!$this->feedConfig->includeNotVisibleProducts($storeId)) {
+        if ($this->feedConfig->activeProductsOnly($storeId, $profile)) {
+            $collection->addAttributeToFilter('status', Status::STATUS_ENABLED);
+        }
+
+        if ($this->feedConfig->visibleProductsOnly($storeId, $profile)) {
             $collection->addAttributeToFilter('visibility', ['neq' => Visibility::VISIBILITY_NOT_VISIBLE]);
         }
 
@@ -174,7 +199,8 @@ class Generator
         string $identifierSource,
         array $extraAttributes,
         array $categoryNames,
-        string $currency
+        string $currency,
+        bool $salableProductsOnly
     ): array {
         $feedId = $this->getProductIdentifier($product, $identifierSource);
         if ($feedId === '') {
@@ -183,6 +209,11 @@ class Generator
 
         $categoryIds = array_map('intval', $product->getCategoryIds() ?: []);
         $prices = $this->getProductPrices($product);
+        $isSalable = $this->isSalable($product);
+        if ($salableProductsOnly && !$isSalable) {
+            return [];
+        }
+
         $row = [
             'id' => $feedId,
             'entity_id' => (int)$product->getId(),
@@ -195,7 +226,7 @@ class Generator
             'price' => $this->formatAmount($prices['price']),
             'final_price' => $this->formatAmount($prices['final_price']),
             'currency' => $currency,
-            'is_salable' => $this->isSalable($product),
+            'is_salable' => $isSalable,
             'visibility' => $this->getAttributeDisplayValue($product, 'visibility'),
             'tax_class_id' => $this->getAttributeDisplayValue($product, 'tax_class_id'),
             'review_count' => (int)$product->getData('reviews_count'),
@@ -228,6 +259,83 @@ class Generator
         }
 
         return $row;
+    }
+
+    /**
+     * @return array<int, bool>
+     */
+    private function getChildIdsWithInactiveParents(ProductCollection $products, int $storeId): array
+    {
+        $childIds = [];
+        foreach ($products as $product) {
+            if ($product instanceof Product) {
+                $childIds[] = (int)$product->getId();
+            }
+        }
+
+        $childIds = array_values(array_unique(array_filter($childIds)));
+        if ($childIds === []) {
+            return [];
+        }
+
+        $connection = $products->getConnection();
+        $relations = $connection->fetchAll(
+            $connection->select()
+                ->from($products->getTable('catalog_product_relation'), ['parent_id', 'child_id'])
+                ->where('child_id IN (?)', $childIds)
+        );
+        if ($relations === []) {
+            return [];
+        }
+
+        $parentIds = [];
+        $parentsByChild = [];
+        foreach ($relations as $relation) {
+            $childId = (int)($relation['child_id'] ?? 0);
+            $parentId = (int)($relation['parent_id'] ?? 0);
+            if ($childId <= 0 || $parentId <= 0) {
+                continue;
+            }
+
+            $parentsByChild[$childId][] = $parentId;
+            $parentIds[] = $parentId;
+        }
+
+        $parentIds = array_values(array_unique($parentIds));
+        if ($parentIds === []) {
+            return [];
+        }
+
+        $activeParentIds = [];
+        $parentCollection = $this->productCollectionFactory->create();
+        $parentCollection->setStoreId($storeId);
+        $parentCollection->addStoreFilter($storeId);
+        $parentCollection->addAttributeToSelect('status');
+        $parentCollection->addAttributeToFilter('entity_id', ['in' => $parentIds]);
+        $parentCollection->load();
+
+        foreach ($parentCollection as $parent) {
+            if ($parent instanceof Product && (int)$parent->getData('status') === Status::STATUS_ENABLED) {
+                $activeParentIds[(int)$parent->getId()] = true;
+            }
+        }
+
+        $childIdsToSkip = [];
+        foreach ($parentsByChild as $childId => $parentIdsForChild) {
+            $hasActiveParent = false;
+            foreach ($parentIdsForChild as $parentId) {
+                if (isset($activeParentIds[(int)$parentId])) {
+                    $hasActiveParent = true;
+                    break;
+                }
+            }
+
+            if (!$hasActiveParent) {
+                $childIdsToSkip[(int)$childId] = true;
+            }
+        }
+
+        return $childIdsToSkip;
     }
 
     /**
@@ -447,7 +555,8 @@ class Generator
         float $timeStart,
         int $total,
         int $output,
-        string $currency
+        string $currency,
+        ?Profile $profile
     ): array {
         try {
             $store = $this->storeManager->getStore($storeId);
@@ -461,11 +570,15 @@ class Generator
         return [
             'system' => 'Magento 2',
             'extension' => 'BerryPath_ProductFeed',
+            'feed_id' => $profile?->getProfileId(),
+            'feed_name' => $profile?->getName(),
+            'feed_type' => $this->feedConfig->getFeedType($storeId, $profile),
+            'output_format' => $this->feedConfig->getOutputFormat($storeId, $profile),
             'store_id' => $storeId,
             'store_code' => $storeCode,
             'store_url' => $storeUrl,
-            'market_code' => $this->feedConfig->getMarketCode($storeId),
-            'locale' => $this->feedConfig->getLocaleCode($storeId),
+            'market_code' => $this->feedConfig->getMarketCode($storeId, $profile),
+            'locale' => $this->feedConfig->getLocaleCode($storeId, $profile),
             'currency' => $currency,
             'products_total' => $total,
             'products_output' => $output,

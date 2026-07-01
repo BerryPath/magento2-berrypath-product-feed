@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">berrypath_productfeed_profile_listing.berrypath_productfeed_profile_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="add">
+                <url path="berrypath/feed/new"/>
+                <class>primary</class>
+                <label translate="true">Add Feed</label>
+            </button>
+        </buttons>
+        <spinner>berrypath_productfeed_profile_columns</spinner>
+        <deps>
+            <dep>berrypath_productfeed_profile_listing.berrypath_productfeed_profile_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="berrypath_productfeed_profile_listing_data_source"
+                component="Magento_Ui/js/grid/provider">
+        <settings>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>BerryPath_ProductFeed::feeds</aclResource>
+        <dataProvider class="BerryPath\ProductFeed\Ui\DataProvider\Profile\Listing"
+                      name="berrypath_productfeed_profile_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks">
+            <settings>
+                <storageConfig>
+                    <namespace>berrypath_productfeed_profile_listing_v4</namespace>
+                </storageConfig>
+            </settings>
+        </bookmark>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <massaction name="listing_massaction" component="Magento_Ui/js/grid/tree-massactions">
+            <action name="generate">
+                <settings>
+                    <url path="berrypath/feed/massGenerate"/>
+                    <type>generate</type>
+                    <label translate="true">Generate</label>
+                </settings>
+            </action>
+            <action name="duplicate">
+                <settings>
+                    <url path="berrypath/feed/massDuplicate"/>
+                    <type>duplicate</type>
+                    <label translate="true">Duplicate</label>
+                </settings>
+            </action>
+            <action name="remove">
+                <settings>
+                    <confirm>
+                        <message translate="true">Remove selected feeds?</message>
+                        <title translate="true">Remove feeds</title>
+                    </confirm>
+                    <url path="berrypath/feed/massDelete"/>
+                    <type>remove</type>
+                    <label translate="true">Remove</label>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="berrypath_productfeed_profile_columns">
+        <selectionsColumn name="ids" sortOrder="0">
+            <settings>
+                <indexField>entity_id</indexField>
+                <resizeEnabled>false</resizeEnabled>
+                <resizeDefaultWidth>55</resizeDefaultWidth>
+            </settings>
+        </selectionsColumn>
+        <column name="entity_id" sortOrder="20">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+        <column name="name" sortOrder="30">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Name</label>
+            </settings>
+        </column>
+        <column name="file" class="BerryPath\ProductFeed\Ui\Component\Listing\Column\File" sortOrder="40">
+            <settings>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <sortable>false</sortable>
+                <label translate="true">Link</label>
+            </settings>
+        </column>
+        <column name="feed_type" component="Magento_Ui/js/grid/columns/select" sortOrder="50">
+            <settings>
+                <options class="BerryPath\ProductFeed\Model\Config\Source\FeedType"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Type</label>
+            </settings>
+        </column>
+        <column name="output_format" component="Magento_Ui/js/grid/columns/select" sortOrder="60">
+            <settings>
+                <options class="BerryPath\ProductFeed\Model\Config\Source\OutputFormat"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Format</label>
+            </settings>
+        </column>
+        <column name="store_id" component="Magento_Ui/js/grid/columns/select" sortOrder="70">
+            <settings>
+                <options class="BerryPath\ProductFeed\Model\Config\Source\StoreView"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Store View</label>
+            </settings>
+        </column>
+        <column name="is_active" component="Magento_Ui/js/grid/columns/select" sortOrder="80">
+            <settings>
+                <options class="BerryPath\ProductFeed\Model\Config\Source\ProfileStatus"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+            </settings>
+        </column>
+        <column name="executed" class="BerryPath\ProductFeed\Ui\Component\Listing\Column\Executed" sortOrder="90">
+            <settings>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <sortable>false</sortable>
+                <label translate="true">Executed</label>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="BerryPath\ProductFeed\Ui\Component\Listing\Column\Actions" sortOrder="1000">
+            <settings>
+                <indexField>entity_id</indexField>
+                <resizeEnabled>false</resizeEnabled>
+                <resizeDefaultWidth>90</resizeDefaultWidth>
+                <label translate="true">Edit</label>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

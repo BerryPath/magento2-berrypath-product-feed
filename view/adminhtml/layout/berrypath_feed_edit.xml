@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      layout="admin-2columns-left"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="left">
+            <block class="BerryPath\ProductFeed\Block\Adminhtml\Feed\Edit\Tabs"
+                   name="berrypath.productfeed.feed.edit.tabs"/>
+            <block class="Magento\Backend\Block\Template"
+                   name="berrypath.productfeed.feed.edit.tabs.toggle"
+                   template="BerryPath_ProductFeed::feed/edit/tabs-toggle.phtml"/>
+        </referenceContainer>
+        <referenceContainer name="content">
+            <block class="BerryPath\ProductFeed\Block\Adminhtml\Render\Header"
+                   name="berrypath.productfeed.feed.edit.header"
+                   before="-"/>
+            <block class="BerryPath\ProductFeed\Block\Adminhtml\Feed\Edit"
+                   name="berrypath.productfeed.feed.edit"/>
+        </referenceContainer>
+    </body>
+</page>

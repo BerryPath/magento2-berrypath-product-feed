@@ -2,7 +2,7 @@
     "name": "berrypath/magento2-berrypath-product-feed",
     "description": "Product feeds for Magento 2.",
     "type": "magento2-module",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "MIT",
     "support": {
         "source": "https://github.com/BerryPath/magento2-berrypath-product-feed"

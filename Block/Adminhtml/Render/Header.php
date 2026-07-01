@@ -4,17 +4,9 @@ declare(strict_types=1);
 
 namespace BerryPath\ProductFeed\Block\Adminhtml\Render;
 
-use Magento\Config\Block\System\Config\Form\Field;
-use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Backend\Block\Template;
 
-class Header extends Field
+class Header extends Template
 {
-    protected $_template = 'BerryPath_ProductFeed::system/config/fieldset/header.phtml';
-
-    public function render(AbstractElement $element): string
-    {
-        $element->addClass('berrypath');
-
-        return $this->toHtml();
-    }
+    protected $_template = 'BerryPath_ProductFeed::feed/header.phtml';
 }

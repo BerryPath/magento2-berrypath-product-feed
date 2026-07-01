@@ -1,0 +1,48 @@
+<?php
+
+/** @var \BerryPath\ProductFeed\Block\Adminhtml\Render\Header $block */
+?>
+<div class="bp-block-berrypath">
+    <div class="bp-block-berrypath__brand">
+        <img
+            class="bp-block-berrypath__logo"
+            src="<?= $block->escapeUrl($block->getViewFileUrl('BerryPath_ProductFeed::images/logo.svg')); ?>"
+            alt="<?= $block->escapeHtmlAttr(__('BerryPath')); ?>"
+        />
+        <div class="bp-block-berrypath__copy">
+            <strong class="bp-block-berrypath__title">
+                <span class="bp-block-berrypath__product"><?= $block->escapeHtml(__('Product Feeds')); ?></span>
+            </strong>
+            <span class="bp-block-berrypath__subtitle">
+                <?= $block->escapeHtml(__('Product feeds for Magento and shopping channels. Interested in Guided Selling?')); ?>
+                <a href="https://www.berrypath.eu/" target="_blank" rel="noopener noreferrer">
+                    <?= $block->escapeHtml(__('Visit our website.')); ?>
+                </a>
+            </span>
+        </div>
+    </div>
+    <div class="bp-block-berrypath__links">
+        <a href="https://www.berrypath.eu/" target="_blank" rel="noopener noreferrer">
+            <img
+                class="bp-block-berrypath__link-icon"
+                src="<?= $block->escapeUrl($block->getViewFileUrl('BerryPath_ProductFeed::images/icon-website.svg')); ?>"
+                width="16"
+                height="16"
+                alt=""
+                aria-hidden="true"
+            />
+            <span><?= $block->escapeHtml(__('Visit berrypath.eu')); ?></span>
+        </a>
+        <a href="https://www.berrypath.eu/contact" target="_blank" rel="noopener noreferrer">
+            <img
+                class="bp-block-berrypath__link-icon"
+                src="<?= $block->escapeUrl($block->getViewFileUrl('BerryPath_ProductFeed::images/icon-contact.svg')); ?>"
+                width="16"
+                height="16"
+                alt=""
+                aria-hidden="true"
+            />
+            <span><?= $block->escapeHtml(__('Contact BerryPath')); ?></span>
+        </a>
+    </div>
+</div>
